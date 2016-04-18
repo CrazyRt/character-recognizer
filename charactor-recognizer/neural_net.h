@@ -24,4 +24,6 @@ public:
 	void load(std::string str);
 	void save(std::string str);
 	void train(int x[], int d[]);
+	void calcuOut();
+	std::vector<double> ResOut(int x[]);
 };
