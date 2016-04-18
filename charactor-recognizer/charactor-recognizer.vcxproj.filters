@@ -15,21 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="neuron.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="neural_layer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="neural_net.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="neuron.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="neural_layer.cpp">
+    <ClCompile Include="neural_net.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
