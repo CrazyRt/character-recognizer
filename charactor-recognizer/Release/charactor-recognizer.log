@@ -1,0 +1,12 @@
+﻿生成启动时间为 2016/4/21 0:32:06。
+     1>项目“D:\Github\character-recognizer\charactor-recognizer\charactor-recognizer.vcxproj”在节点 2 上(Build 个目标)。
+     1>ClCompile:
+         D:\Program Files\visual studio 2013 express for windows\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D Win32 /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp neural_net.cpp
+         main.cpp
+     1>d:\program files\visual studio 2013 express for windows\vc\include\fl\fl_utf8.h(62): fatal error C1083: 无法打开包括文件: “X11/Xlocale.h”: No such file or directory
+         neural_net.cpp
+     1>已完成生成项目“D:\Github\character-recognizer\charactor-recognizer\charactor-recognizer.vcxproj”(Build 个目标)的操作 - 失败。
+
+生成失败。
+
+已用时间 00:00:00.43
