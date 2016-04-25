@@ -86,7 +86,7 @@ void c_neural_net::update(){
 }
 
 void c_neural_net::save(std::string str){
-	std::string src = ".\\src\\" + str;
+	std::string src =  str;
 	std::ofstream ofile(src);
 	ofile << num_inputs<<std::endl;
 	ofile << num_outputs << std::endl;
@@ -103,7 +103,7 @@ void c_neural_net::save(std::string str){
 }
 
 void c_neural_net::load(std::string str){
-	std::string src = ".\\src\\" + str;
+	std::string src =  str;
 	std::ifstream ofile(src);
 	ofile >> num_inputs ;
 	ofile >> num_outputs ;

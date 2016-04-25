@@ -9,13 +9,16 @@
 using namespace std;
 
 
-const int MAX_INPUT = 200;
+const int MAX_INPUT = 300;
 const int num_char = 26;
 const int level = 6;
-int x[1000][MAX_INPUT];
-int d[1000][MAX_INPUT];
+int x[MAX_INPUT];
+
+int xx[10000][MAX_INPUT];
+int d[10000][MAX_INPUT];
 char true_value;
 int train_sum = 0;
+
 
 Fl_Button*  ss[level][level];
 map<char, int> char_to_num;
@@ -29,32 +32,49 @@ map<void*, int> get_no;
 
 
 void train_cb(Fl_Widget* o, void* v) {
-
+	cout << "example" << train_sum << endl;
+	for (int i = 0; i < MAX_INPUT; ++i) xx[train_sum][i] = x[i];
 	Fl_Input* i = (Fl_Input*)v;
 	true_value = *(i->value());
 	for (int i = 0; i < num_char; ++i) d[train_sum][i] = 0;
 	d[train_sum][char_to_num[true_value]] = 1;
-	neuralNet.train(x[train_sum], d[train_sum]);
+	neuralNet.train(xx[train_sum], d[train_sum]);
 	cout << true_value << char_to_num[true_value] << endl;
-	neuralNet.save("1.ini");
+	neuralNet.save("wt.ini");
 	++train_sum;
 }
 
 
 void trainall_cb(Fl_Widget* o, void* v) {
-
-	for (int i = 0; i < train_sum;++i)	neuralNet.train(x[i], d[i]);
+	ifstream eg("example.ini");
+	eg >> train_sum;
+	cout << train_sum << endl;
+	for (int i = 0; i < train_sum; ++i){
+		for (int j = 0; j < level*level; ++j) eg >> xx[i][j];
+		for (int j = 0; j < num_char; ++j) eg >> d[i][j];
+	}
+	cout << train_sum << endl;
+	for (int i = 0; i < train_sum; ++i)	{ 
+		for (int j = 0; j < level; ++j) {
+			for (int k = 0; k < level; ++k) cout << xx[i][level*j+k] << " ";
+			cout << endl;
+		}
+		for (int k = 0; k < num_char; ++k) if (d[i][k] == 1) cout << no_to_char[k]<<"example:"<<i;
+		cout << endl;
+		neuralNet.train(xx[i], d[i]);
+	}
 	
-	neuralNet.save("1.ini");
+	neuralNet.save("wt.ini");
 
 }
 
 void recog_cb(Fl_Widget* o, void* v=0){
+	
 	for (int i = 0; i < level; ++i) {
-		for (int j = 0; j < level; ++j) cout << x[train_sum][i*level+j]<<" ";
+		for (int j = 0; j < level; ++j) cout << x[i*level+j]<<" ";
 		cout << endl;
 	}
-	vector<double> ans = neuralNet.ResOut(x[train_sum]);
+	vector<double> ans = neuralNet.ResOut(x);
 	for (int i = 0; i < num_char; ++i)
 		cout << no_to_char[i] << " " << ans[i] << endl;
 }
@@ -64,32 +84,46 @@ void clr_cb(Fl_Widget* o, void* v) {
 		for (int j = 0; j < level; ++j){
 			ss[i][j]->clear();
 			ss[i][j]->label("");
-			x[train_sum][i * level + j] = 0;
+			x[i * level + j] = 0;
 
 		}
 }
 void ld_cb(Fl_Widget* o, void* v=0) {
-	neuralNet.load("1.ini");
+	neuralNet.load("wt.ini");
 }
 
 void sv_cb(Fl_Widget* o, void* v=0) {
-	neuralNet.save("1.ini");
+	neuralNet.save("wt.ini");
+	ofstream eg("example.ini");
+	eg << train_sum<<endl;
+	for (int i = 0; i < train_sum; ++i){
+		for (int j = 0; j < level; ++j){
+			for (int k = 0; k < level; ++k)	eg << xx[i][j*level+k] << " ";
+			eg << endl;
+		}
+		for (int j = 0; j < num_char; ++j) eg << d[i][j] << " ";
+		eg << endl;
+	}
+}
+
+void exit_cb(Fl_Widget* o, void* v = 0) {
+	exit(0);
 }
 
 
 void s_cb(Fl_Widget* o, void* v = 0){
 	Fl_Button* b = (Fl_Button*)o;
 	int t = get_no[b];
-	if (x[train_sum][t] == 1) { 
+	if (x[t] == 1) { 
 		b->label("");
-		x[train_sum][t] = 0;
+		x[t] = 0;
 	}
 	else {
 		b->label("1");
-		x[train_sum][t] = 1;
+		x[t] = 1;
 	}
 	
-	cout << x[train_sum][t]<<"  "<<t<<endl;
+	cout << x[t]<<"  "<<t<<endl;
 }
 
 
@@ -98,6 +132,16 @@ int main() {
 	for (int i = 0; i < num_char; ++i) char_to_num[no_to_char[i]] = i;
 	
 
+	//for (int i = 0; i < train_sum; ++i)	{
+	//	for (int j = 0; j < level; ++j) {
+	//		for (int k = 0; k < level; ++k) cout << xx[i][level*j + k] << " ";
+	//		cout << endl;
+	//	}
+	//	for (int j = 0; j < num_char; ++j) cout << d[i][j] << " ";
+	//	cout << endl;
+	//}
+
+	neuralNet.load("wt.ini");
 	Fl_Double_Window win(1000, 800,"recognizer");
 	int* val=new int(0);
 	win.begin();
@@ -105,14 +149,14 @@ int main() {
 	Fl_Button *tra = new Fl_Button(10, 50, 100, 30, "train");
 	Fl_Button *clr = new Fl_Button(210, 50, 100, 30, "clear");
 	Fl_Button *reco = new Fl_Button(110, 50, 100, 30, "recognize");
-	Fl_Button *ld = new Fl_Button(310, 50, 100, 30, "load");
-	Fl_Button *sv = new Fl_Button(410, 50, 100, 30, "save");
-	Fl_Button *traA = new Fl_Button(510, 50, 100, 30, "train all");
+	Fl_Button *exit = new Fl_Button(510, 50, 100, 30, "exit");
+	Fl_Button *sv = new Fl_Button(310, 50, 100, 30, "save");
+	Fl_Button *traA = new Fl_Button(410, 50, 100, 30, "train all");
 	
 	for (int i = 0; i < level; ++i)
 		for (int j = 0; j < level; ++j){
-			for (int k = 0; k < 1000; ++k) x[k][i*level + j] = 0;
-			ss[i][j] = new Fl_Button(200 + 20 * j, 200 + 20 * i, 20, 20, "");
+			for (int k = 0; k < 10000; ++k) xx[k][i*level + j] = 0;
+			ss[i][j] = new Fl_Button(200 + 30 * j, 200 + 30 * i, 30, 30, "");
 			ss[i][j]->type(FL_TOGGLE_BUTTON);
 			ss[i][j]->clear();
 			ss[i][j]->label("");
@@ -125,12 +169,13 @@ int main() {
 		}
 
 
-	tra->callback(train_cb, inpu);
+	
 	reco->callback(recog_cb);
 	clr->callback(clr_cb, ss);
-	ld->callback(ld_cb);
+	exit->callback(exit_cb);
 	sv->callback(sv_cb);
-
+	tra->callback(train_cb, inpu);
+	traA->callback(trainall_cb);
 	win.end();
 	win.show();
 	return Fl::run();
